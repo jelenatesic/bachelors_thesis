@@ -1,3 +1,7 @@
+# Machine learning base classification of the spine
+# Based on spine parameters, Decision tree, SVM, random forest and Naive Bayes models were formed
+# 
+
 getwd()
 setwd("C:/Users/tesic/jelena/fakultet/BMI/STATISTIKA/DOMACI/domaci10/")
 library(readxl)
@@ -7,7 +11,7 @@ library(tidyverse)
 library(MASS)
 library(class)
 
-C1 =read.csv("C:/Users/tesic/JELENA/fakultet/BMI/STATISTIKA/DOMACI/domaci1?/biomechanical-features-of-orthopedic-patients/column_2C_weka.csv", stringsAsFactors = F)
+C1 = read.csv("C:/Users/tesic/JELENA/fakultet/BMI/STATISTIKA/DOMACI/domaci1?/biomechanical-features-of-orthopedic-patients/column_2C_weka.csv", stringsAsFactors = F)
 
 
 colnames(C1)[colnames(C1) == "pelvic_tilt.numeric"] = "nagib_karlice"
@@ -96,9 +100,9 @@ corr_mat <- cor(C1[,1:6])
 co?rplot(corr_mat, method = "number", col =c ("goldenrod1", "darkorange1", "darkred") )
 
 
-#PRAVLJENJE MODELA
+# MODELS
 
-#normalizujemo podatke
+# NORMALIZAION
 library(caret)
 #C1_1 = as.data.frame(scale(C1[,1:6]))
 #S = C1$status
@@ -109,7 +113,8 @@ library(caret)
 
 library(randomForest)
 library(caTools)
-#imamo mali dataset, pa ga delimo 70/30
+
+# SPLITING DATA SET ON TRAIN AND TEST
 set.seed(1234)
 split = sample.split(C1$status, SplitRatio = 0.75)
 train_data = subset(C1, split == TRUE)
@@ -135,9 +140,9 @@ rpart.plot(C1_tree, type = 2, fallen.leaves = F, extra = 2)
 #presek na >=20, pri cemu je onda kicma normalna. U drugom slucaju, <20 je abnormalna.
 #Onda se spu�tamo na sledeci cvor.
 
-#sada presecamo drvo
+#Now we cut the tree
 #CV error min at 4th split - row 4
-cp <- min?C1_tree$cptable[4, ])
+cp <- min(C1_tree$cptable[4, ])
 prune.tree.C1 <- prune(C1_tree, cp = cp)
 rpart.plot(prune.tree.C1, type = 2, fallen.leaves = F, extra = 2)
 
@@ -151,7 +156,7 @@ confusionMatrix(table(df1$Orig,df1$Pred))
 ############RANDOM FOREST
 rf.C1 <-randomForest(as.factor(status) ~., data=tra?n_data)
 print(rf.C1)
-# veca je gre�ka pri predvidanju normalnih
+# the error is higher when predicting the normal ones 
 
 #vizuelizacija
 plot(rf.C1)
